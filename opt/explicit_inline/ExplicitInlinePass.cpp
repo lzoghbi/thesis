@@ -68,7 +68,7 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
 
   MethodsToInline imethodsStr;
   DexMethod *caller, *callee;
-  parse_file("/home/theodore/Desktop/mthesis/plast-redex/redex/opt/explicit_inline/imethods.txt", imethodsStr);
+  parse_file("~/Desktop/mthesis/plast-redex/redex/opt/explicit_inline/imethods.txt", imethodsStr);
 
   for(auto map_entry : imethodsStr){
     std::string caller_str = get_caller_str(map_entry.first);
@@ -91,7 +91,7 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
     }
 
     MethodImplsStr method_impls = map_entry.second;
-    if(method_impls.size() == 1){
+    if(method_impls.size() > 1){
       for(auto impl : method_impls){
         callee = (DexMethod*) DexMethod::get_method(impl);
         DexType* type = get_callee_type(impl);
@@ -130,12 +130,12 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
           false_block = caller_code->insert_after(false_block, invoke_insn);
         }
 
-        auto new_meth = caller_mc->create();
-
-        inliner::inline_method(new_meth->get_code(),
+        inliner::inline_method(caller->get_code(),
                                callee->get_code(),
                                false_block);
-      }                    
+       
+      }
+      caller_mc->create();   
     }
     else{
       auto impl_it = method_impls.begin();
@@ -143,7 +143,7 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
       inliner::inline_method(caller->get_code(), callee->get_code(), it);
       
     }
-    // caller_code->erase(it);
+    caller_code->erase(it);
     std::cout << "new method block = " << SHOW(caller->get_code()) << std::endl;
   }           
 

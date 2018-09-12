@@ -1,1 +1,2 @@
-Landroid/support/transition/Transition;.setDuration:(J)Landroid/support/transition/Transition;	Landroid/support/design/internal/BottomNavigationAnimationHelperIcs;.<init>:()V/13
+Lcom/example/tmichailidis/myapplication/Button2;.click:()V	Lcom/example/tmichailidis/myapplication/MainActivity;.onCreate:(Landroid/os/Bundle;)V/19
+Lcom/example/tmichailidis/myapplication/Button1;.click:()V	Lcom/example/tmichailidis/myapplication/MainActivity;.onCreate:(Landroid/os/Bundle;)V/19
