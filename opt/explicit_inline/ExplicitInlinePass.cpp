@@ -20,7 +20,7 @@ void parse_file(std::string filename, MethodsToInline& imethods){
     while(!file.eof()){
       std::string method, callsite;
       std::getline (file, method, '\t');
-      std::getline (file, callsite);
+      std::getline (file, callsite, '\n');
 
       if(!method.empty() && !callsite.empty()){
         if(imethods.find(callsite) == imethods.end()){
@@ -68,7 +68,7 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
 
   MethodsToInline imethodsStr;
   DexMethod *caller, *callee;
-  parse_file("~/Desktop/mthesis/plast-redex/redex/opt/explicit_inline/imethods.txt", imethodsStr);
+  parse_file("imethods.txt", imethodsStr);
 
   for(auto map_entry : imethodsStr){
     std::string caller_str = get_caller_str(map_entry.first);
@@ -80,7 +80,6 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
     uint16_t idx = 0, this_reg;
     IRCode *caller_code = caller->get_code();
     auto caller_mc = new MethodCreator(caller);
-    auto caller_mb = caller_mc->get_main_block();
     for(auto& mie : InstructionIterable(caller_code)){
       if(idx++ == insn_index){
         insn = mie.insn;
@@ -95,29 +94,29 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
       for(auto impl : method_impls){
         callee = (DexMethod*) DexMethod::get_method(impl);
         DexType* type = get_callee_type(impl);
-        auto dst_location = caller_mc->make_local(get_boolean_type());
+        auto dst_location = caller_code->get_registers_size();
+        caller_code->set_registers_size(dst_location+1);
 
 
-        IRInstruction* instance_of_insn = new IRInstruction(OPCODE_INSTANCE_OF);
-        IRInstruction* move_res = new IRInstruction(IOPCODE_MOVE_RESULT_PSEUDO);
+        auto instance_of_insn = new IRInstruction(OPCODE_INSTANCE_OF);
+        auto move_res = new IRInstruction(IOPCODE_MOVE_RESULT_PSEUDO);
         instance_of_insn->set_src(0, this_reg);
         instance_of_insn->set_type(type);
-        move_res->set_dest(dst_location.get_reg());
+        move_res->set_dest(dst_location);
         caller_code->insert_after(it, instance_of_insn);
         caller_code->insert_after(std::next(it), move_res);
 
 
         auto if_insn = new IRInstruction(OPCODE_IF_EQZ);
-        if_insn->set_src(0, dst_location.get_reg());
+        if_insn->set_src(0, dst_location);
         auto if_entry = new MethodItemEntry(if_insn);
         auto false_block = caller_code->insert_after(std::next(it, 2), *if_entry);
-        auto bt = new BranchTarget(if_entry);
-        auto bentry = new MethodItemEntry(bt);
-        caller_code->insert_after(std::prev(caller_code->end()), *bentry);
+        // auto bt = new BranchTarget(if_entry);
+        // auto bentry = new MethodItemEntry(bt);
+        // caller_code->insert_after(std::prev(caller_code->end()), *bentry);
  
 
         auto invoke_insn = new IRInstruction(OPCODE_INVOKE_VIRTUAL);
-        auto type_list = callee->get_proto()->get_args()->get_type_list(); 
         invoke_insn->set_method(callee)->set_arg_word_count(insn->arg_word_count());
 
         for (uint16_t i = 0; i < insn->srcs().size(); i++) {
@@ -132,10 +131,12 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
 
         inliner::inline_method(caller->get_code(),
                                callee->get_code(),
-                               false_block);
-       
+                               false_block);      
       }
+
+      caller_code->erase(it);
       caller_mc->create();   
+    
     }
     else{
       auto impl_it = method_impls.begin();
@@ -143,10 +144,8 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
       inliner::inline_method(caller->get_code(), callee->get_code(), it);
       
     }
-    caller_code->erase(it);
-    std::cout << "new method block = " << SHOW(caller->get_code()) << std::endl;
   }           
-
+  std::cout << SHOW(caller->get_code()) << std::endl;
   std::cout << "Explicit inline pass done." << std::endl;
 }
 
