@@ -69,6 +69,7 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
   MethodsToInline imethodsStr;
   DexMethod *caller, *callee;
   parse_file("imethods.txt", imethodsStr);
+  ClassHierarchy ch = build_type_hierarchy(scope);
 
   for(auto map_entry : imethodsStr){
     std::string caller_str = get_caller_str(map_entry.first);
@@ -89,6 +90,7 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
       }
     }
 
+    IRList::iterator false_block_it, true_block_it = it;
     MethodImplsStr method_impls = map_entry.second;
     if(method_impls.size() > 1){
       for(auto impl : method_impls){
@@ -98,23 +100,38 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
         caller_code->set_registers_size(dst_location+1);
 
 
+        //instance of
         auto instance_of_insn = new IRInstruction(OPCODE_INSTANCE_OF);
         auto move_res = new IRInstruction(IOPCODE_MOVE_RESULT_PSEUDO);
         instance_of_insn->set_src(0, this_reg);
         instance_of_insn->set_type(type);
         move_res->set_dest(dst_location);
-        caller_code->insert_after(it, instance_of_insn);
-        caller_code->insert_after(std::next(it), move_res);
+        auto instanceof_it = caller_code->insert_after(true_block_it, instance_of_insn);
+        instanceof_it = caller_code->insert_after(instanceof_it, move_res);
 
 
+        //if block
         auto if_insn = new IRInstruction(OPCODE_IF_EQZ);
         if_insn->set_src(0, dst_location);
-        auto if_entry = new MethodItemEntry(if_insn);
-        auto false_block = caller_code->insert_after(std::next(it, 2), *if_entry);
-        // auto bt = new BranchTarget(if_entry);
-        // auto bentry = new MethodItemEntry(bt);
-        // caller_code->insert_after(std::prev(caller_code->end()), *bentry);
- 
+        auto if_entry  = new MethodItemEntry(if_insn);
+        false_block_it = caller_code->insert_after(instanceof_it, *if_entry);
+        
+        //else goto
+        auto goto_insn  = new IRInstruction(OPCODE_GOTO);
+        auto goto_entry = new MethodItemEntry(goto_insn);
+        auto goto_it = caller_code->insert_after(std::prev(caller_code->end()),
+                                                 *goto_entry);
+
+        // main block
+        auto main_bt    = new BranchTarget(goto_entry);
+        auto main_entry = new MethodItemEntry(main_bt);
+        auto main_block = caller_code->insert_after(goto_it, *main_entry);
+
+        // else block
+        auto else_bt  = new BranchTarget(if_entry);
+        auto eb_entry = new MethodItemEntry(else_bt);
+        true_block_it = caller_code->insert_after(goto_it, *eb_entry);
+
 
         auto invoke_insn = new IRInstruction(OPCODE_INVOKE_VIRTUAL);
         invoke_insn->set_method(callee)->set_arg_word_count(insn->arg_word_count());
@@ -122,19 +139,19 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
         for (uint16_t i = 0; i < insn->srcs().size(); i++) {
           invoke_insn->set_src(i, insn->srcs().at(i));
         }
-        if (false_block == caller_code->end()) {
+        if (false_block_it == caller_code->end()) {
           caller_code->push_back(invoke_insn);
           std::prev(caller_code->end());
         } else {
-          false_block = caller_code->insert_after(false_block, invoke_insn);
+          false_block_it = caller_code->insert_after(false_block_it, invoke_insn);
         }
 
-        inliner::inline_method(caller->get_code(),
-                               callee->get_code(),
-                               false_block);      
+        // inliner::inline_method(caller->get_code(),
+        //                        callee->get_code(),
+        //                        false_block_it);      
       }
 
-      caller_code->erase(it);
+      // caller_code->erase(it);
       caller_mc->create();   
     
     }

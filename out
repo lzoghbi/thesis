@@ -1,51 +1,42 @@
-[0x7f3f494982d0] OPCODE: IOPCODE_LOAD_PARAM_OBJECT v6
-[0x7f3f49498300] OPCODE: IOPCODE_LOAD_PARAM_OBJECT v7
-[0x7f3f49498bc0] POSITION: MainActivity.java:18
-[0x7f3f49498330] OPCODE: INVOKE_SUPER v6, v7, Landroid/support/v7/app/AppCompatActivity;.onCreate:(Landroid/os/Bundle;)V
-[0x7f3f49498360] OPCODE: CONST v7, 2131427356
-[0x7f3f49498bf0] POSITION: MainActivity.java:19
-[0x7f3f49498390] OPCODE: INVOKE_VIRTUAL v6, v7, Lcom/example/tmichailidis/myapplication/MainActivity;.setContentView:(I)V
-[0x7f3f494983c0] OPCODE: CONST v7, 2131230905
-[0x7f3f49498c20] POSITION: MainActivity.java:20
-[0x7f3f494983f0] OPCODE: INVOKE_VIRTUAL v6, v7, Lcom/example/tmichailidis/myapplication/MainActivity;.findViewById:(I)Landroid/view/View;
-[0x7f3f49498420] OPCODE: MOVE_RESULT_OBJECT v7
-[0x7f3f49498450] OPCODE: CHECK_CAST v7, Landroid/support/v7/widget/Toolbar;
-[0x7f3f49498970] OPCODE: IOPCODE_MOVE_RESULT_PSEUDO_OBJECT v7
-[0x7f3f49498c50] POSITION: MainActivity.java:21
-[0x7f3f49498480] OPCODE: INVOKE_VIRTUAL v6, v7, Lcom/example/tmichailidis/myapplication/MainActivity;.setSupportActionBar:(Landroid/support/v7/widget/Toolbar;)V
-[0x7f3f494984b0] OPCODE: CONST v7, 2131230756
-[0x7f3f49498c80] POSITION: MainActivity.java:22
-[0x7f3f494984e0] OPCODE: INVOKE_VIRTUAL v6, v7, Lcom/example/tmichailidis/myapplication/MainActivity;.findViewById:(I)Landroid/view/View;
-[0x7f3f49498510] OPCODE: MOVE_RESULT_OBJECT v6
-[0x7f3f49498540] OPCODE: CHECK_CAST v6, Landroid/widget/Button;
-[0x7f3f4800c9c0] OPCODE: IOPCODE_MOVE_RESULT_PSEUDO_OBJECT v6
-[0x7f3f49498cb0] POSITION: MainActivity.java:23
-[0x7f3f49498570] OPCODE: NEW_INSTANCE Lcom/example/tmichailidis/myapplication/Button2;
-[0x7f3f48041a00] OPCODE: IOPCODE_MOVE_RESULT_PSEUDO_OBJECT v6
-[0x7f3f494985a0] OPCODE: INVOKE_DIRECT v6, Lcom/example/tmichailidis/myapplication/Button2;.<init>:()V
-[0x7f3f49498ce0] POSITION: MainActivity.java:24
-[0x5626ae4af4a0] OPCODE: INSTANCE_OF v6, Lcom/example/tmichailidis/myapplication/Button2;
-[0x5626ae4ae720] OPCODE: IOPCODE_MOVE_RESULT_PSEUDO v3
-[0x5626ae4aded0] OPCODE: IF_EQZ v3
-[0x5626ae4cec80] OPCODE: MOVE_OBJECT v5, v6
-[0x5626ae4ae520] POSITION: Button2.java:8
-[0x5626ae4afd90] OPCODE: SGET_OBJECT Ljava/lang/System;.out:Ljava/io/PrintStream;
-[0x5626ae4d5780] OPCODE: IOPCODE_MOVE_RESULT_PSEUDO_OBJECT v5
-[0x5626ae4d7230] OPCODE: CONST_STRING "CLICKED Button2"
-[0x5626ae4caf10] OPCODE: IOPCODE_MOVE_RESULT_PSEUDO_OBJECT v4
-[0x5626ae4ce9c0] OPCODE: INVOKE_VIRTUAL v5, v4, Ljava/io/PrintStream;.println:(Ljava/lang/String;)V
-[0x5626ae4affc0] POSITION: MainActivity.java:24
-[0x5626ae4d5950] OPCODE: INSTANCE_OF v6, Lcom/example/tmichailidis/myapplication/Button1;
-[0x5626ae4f6210] OPCODE: IOPCODE_MOVE_RESULT_PSEUDO v0
-[0x5626ae4d58f0] OPCODE: IF_EQZ v0
-[0x5626ae574260] OPCODE: MOVE_OBJECT v2, v6
-[0x5626ae4ca3f0] POSITION: Button1.java:9
-[0x5626ae4d1c90] OPCODE: SGET_OBJECT Ljava/lang/System;.out:Ljava/io/PrintStream;
-[0x5626ae4d57f0] OPCODE: IOPCODE_MOVE_RESULT_PSEUDO_OBJECT v2
-[0x5626ae4ca8d0] OPCODE: CONST_STRING "CLICKED Button1"
-[0x5626ae4ca900] OPCODE: IOPCODE_MOVE_RESULT_PSEUDO_OBJECT v1
-[0x5626ae4b05a0] OPCODE: INVOKE_VIRTUAL v2, v1, Ljava/io/PrintStream;.println:(Ljava/lang/String;)V
-[0x5626ae4b07e0] POSITION: MainActivity.java:24
-[0x7f3f49498640] OPCODE: RETURN_VOID 
+[0x7f4e654ccde0] OPCODE: IOPCODE_LOAD_PARAM_OBJECT v2
+[0x7f4e654cce10] OPCODE: IOPCODE_LOAD_PARAM_OBJECT v3
+[0x7f4e64014810] POSITION: MainActivity.java:18
+[0x7f4e654cce40] OPCODE: INVOKE_SUPER v2, v3, Landroid/support/v7/app/AppCompatActivity;.onCreate:(Landroid/os/Bundle;)V
+[0x7f4e654cce70] OPCODE: CONST v3, 2131427356
+[0x7f4e64014840] POSITION: MainActivity.java:19
+[0x7f4e654ccea0] OPCODE: INVOKE_VIRTUAL v2, v3, Lcom/example/tmichailidis/myapplication/MainActivity;.setContentView:(I)V
+[0x7f4e654cced0] OPCODE: CONST v3, 2131230905
+[0x7f4e64014870] POSITION: MainActivity.java:20
+[0x7f4e654ccf40] OPCODE: INVOKE_VIRTUAL v2, v3, Lcom/example/tmichailidis/myapplication/MainActivity;.findViewById:(I)Landroid/view/View;
+[0x7f4e654ccfb0] OPCODE: MOVE_RESULT_OBJECT v3
+[0x7f4e654cd020] OPCODE: CHECK_CAST v3, Landroid/support/v7/widget/Toolbar;
+[0x7f4e6400b8b0] OPCODE: IOPCODE_MOVE_RESULT_PSEUDO_OBJECT v3
+[0x7f4e64006a50] POSITION: MainActivity.java:21
+[0x7f4e654cd090] OPCODE: INVOKE_VIRTUAL v2, v3, Lcom/example/tmichailidis/myapplication/MainActivity;.setSupportActionBar:(Landroid/support/v7/widget/Toolbar;)V
+[0x7f4e654cd100] OPCODE: CONST v3, 2131230756
+[0x7f4e64006a80] POSITION: MainActivity.java:22
+[0x7f4e654cd170] OPCODE: INVOKE_VIRTUAL v2, v3, Lcom/example/tmichailidis/myapplication/MainActivity;.findViewById:(I)Landroid/view/View;
+[0x7f4e654cd1e0] OPCODE: MOVE_RESULT_OBJECT v2
+[0x7f4e654cd250] OPCODE: CHECK_CAST v2, Landroid/widget/Button;
+[0x7f4e640067a0] OPCODE: IOPCODE_MOVE_RESULT_PSEUDO_OBJECT v2
+[0x7f4e64006ab0] POSITION: MainActivity.java:23
+[0x7f4e654cd2c0] OPCODE: NEW_INSTANCE Lcom/example/tmichailidis/myapplication/Button2;
+[0x7f4e6403a600] OPCODE: IOPCODE_MOVE_RESULT_PSEUDO_OBJECT v2
+[0x7f4e654cd330] OPCODE: INVOKE_DIRECT v2, Lcom/example/tmichailidis/myapplication/Button2;.<init>:()V
+[0x7f4e64006ae0] POSITION: MainActivity.java:24
+[0x7f4e654cd3a0] OPCODE: INVOKE_VIRTUAL v2, Lcom/example/tmichailidis/myapplication/Button1;.click:()V
+[0x55cb1d0b7110] OPCODE: INSTANCE_OF v2, Lcom/example/tmichailidis/myapplication/Button1;
+[0x55cb1d11bae0] OPCODE: IOPCODE_MOVE_RESULT_PSEUDO v0
+[0x55cb1d0b70b0] OPCODE: IF_EQZ v0
+[0x55cb1d132cf0] OPCODE: INVOKE_VIRTUAL v2, Lcom/example/tmichailidis/myapplication/Button1;.click:()V
+[0x7f4e654cd410] OPCODE: RETURN_VOID 
+[0x55cb1d08b390] OPCODE: GOTO 
+[0x55cb1d06e950] TARGET: SIMPLE 0x55cb1d0b70b0
+[0x55cb1d08bc70] OPCODE: INSTANCE_OF v2, Lcom/example/tmichailidis/myapplication/Button2;
+[0x55cb1d0704a0] OPCODE: IOPCODE_MOVE_RESULT_PSEUDO v1
+[0x55cb1d06e5a0] OPCODE: IF_EQZ v1
+[0x55cb1d072720] OPCODE: INVOKE_VIRTUAL v2, Lcom/example/tmichailidis/myapplication/Button2;.click:()V
+[0x55cb1d133250] OPCODE: GOTO 
+[0x55cb1d068130] TARGET: SIMPLE 0x55cb1d06e5a0
 
 Explicit inline pass done.
