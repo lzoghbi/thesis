@@ -8,10 +8,30 @@
     #include "ClassHierarchy.h"
     #include "ExplicitInlinePass.h"
 
-struct Location;
+bool compare_class_types(const DexMethod* meth1, const DexMethod* meth2){
+  auto cls_type1 = type_class(meth1->get_class());
+  auto cls_type2 = type_class(meth2->get_class());
+  auto cls1 = cls_type1->get_super_class();
+  auto cls2 = cls_type2->get_type();
+  auto obj_type = get_object_type();
+  
+  while(cls1 != obj_type){
+    if(cls1->c_str() == cls2->c_str()){
+      return true;
+    }
+    cls1 = type_class(cls1)->get_super_class();
+  }
+  return false;
+}
 
-using MethodImplsStr = std::unordered_set<std::string>;
-using MethodsToInline = std::unordered_map<std::string, MethodImplsStr>; 
+struct class_type_comparator {
+  bool operator()(const DexMethod* meth1, const DexMethod* meth2) const {
+    return compare_class_types(meth1, meth2);
+  }
+};
+
+using MethodImpls = std::set<DexMethod*, class_type_comparator>;
+using MethodsToInline = std::unordered_map<std::string, MethodImpls>; 
 
 void parse_file(std::string filename, MethodsToInline& imethods){
   std::ifstream file(filename);
@@ -24,25 +44,16 @@ void parse_file(std::string filename, MethodsToInline& imethods){
 
       if(!method.empty() && !callsite.empty()){
         if(imethods.find(callsite) == imethods.end()){
-          MethodImplsStr method_impls;
+          MethodImpls method_impls;
           imethods.insert(std::make_pair(callsite, method_impls));
         }
-        imethods[callsite].insert(method);
+        imethods[callsite].insert((DexMethod*) DexMethod::get_method(method));
       }
     }
   }
   else{ 
     std::cout << "Could not open file " << filename << std::endl;
   }
-}
-
-DexType* get_callee_type(std::string callee_str){
-  std::istringstream iss(callee_str);
-  std::string cls_name;
-
-  std::getline(iss, cls_name, '.');
-
-  return DexType::get_type(cls_name.c_str());
 }
 
 std::string get_caller_str(std::string caller_name){    
@@ -62,6 +73,7 @@ uint16_t get_insn_index(std::string callsite){
   return atoi(insn_index.c_str());
 }
 
+
 void ExplicitInlinePass::run_pass(DexStoresVector& stores, 
                                   ConfigFiles& cfg, 
                                   PassManager& mgr) {
@@ -69,7 +81,7 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
   MethodsToInline imethodsStr;
   DexMethod *caller, *callee;
   parse_file("imethods.txt", imethodsStr);
-  ClassHierarchy ch = build_type_hierarchy(scope);
+  std::cout << "file parsing ended" << std::endl;
 
   for(auto map_entry : imethodsStr){
     std::string caller_str = get_caller_str(map_entry.first);
@@ -91,11 +103,10 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
     }
 
     IRList::iterator false_block_it, true_block_it = it;
-    MethodImplsStr method_impls = map_entry.second;
+    MethodImpls method_impls = map_entry.second;
     if(method_impls.size() > 1){
-      for(auto impl : method_impls){
-        callee = (DexMethod*) DexMethod::get_method(impl);
-        DexType* type = get_callee_type(impl);
+      for(auto callee : method_impls){
+        DexType* type = callee->get_class();
         auto dst_location = caller_code->get_registers_size();
         caller_code->set_registers_size(dst_location+1);
 
@@ -156,8 +167,7 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
     
     }
     else{
-      auto impl_it = method_impls.begin();
-      callee = (DexMethod*) DexMethod::get_method(*impl_it);
+      callee = *method_impls.begin();
       inliner::inline_method(caller->get_code(), callee->get_code(), it);
       
     }

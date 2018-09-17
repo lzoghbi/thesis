@@ -1,2 +1,2 @@
-Lcom/example/tmichailidis/myapplication/Button2;.click:()V	Lcom/example/tmichailidis/myapplication/MainActivity;.onCreate:(Landroid/os/Bundle;)V/19
 Lcom/example/tmichailidis/myapplication/Button1;.click:()V	Lcom/example/tmichailidis/myapplication/MainActivity;.onCreate:(Landroid/os/Bundle;)V/19
+Lcom/example/tmichailidis/myapplication/Button2;.click:()V	Lcom/example/tmichailidis/myapplication/MainActivity;.onCreate:(Landroid/os/Bundle;)V/19
