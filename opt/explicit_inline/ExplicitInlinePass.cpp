@@ -78,12 +78,12 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
                                   ConfigFiles& cfg, 
                                   PassManager& mgr) {
 
-  MethodsToInline imethodsStr;
+  MethodsToInline imethods;
   DexMethod *caller, *callee;
-  parse_file("imethods.txt", imethodsStr);
+  parse_file("imethods.txt", imethods);
   std::cout << "file parsing ended" << std::endl;
 
-  for(auto map_entry : imethodsStr){
+  for(auto map_entry : imethods){
     std::string caller_str = get_caller_str(map_entry.first);
     uint16_t insn_index    = get_insn_index(map_entry.first);
     caller = (DexMethod*) DexMethod::get_method(caller_str);
@@ -130,13 +130,8 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
         //else goto
         auto goto_insn  = new IRInstruction(OPCODE_GOTO);
         auto goto_entry = new MethodItemEntry(goto_insn);
-        auto goto_it = caller_code->insert_after(std::prev(caller_code->end()),
+        auto goto_it = caller_code->insert_after(false_block_it /*std::prev(caller_code->end())*/,
                                                  *goto_entry);
-
-        // main block
-        auto main_bt    = new BranchTarget(goto_entry);
-        auto main_entry = new MethodItemEntry(main_bt);
-        auto main_block = caller_code->insert_after(goto_it, *main_entry);
 
         // else block
         auto else_bt  = new BranchTarget(if_entry);
@@ -157,12 +152,12 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
           false_block_it = caller_code->insert_after(false_block_it, invoke_insn);
         }
 
-        // inliner::inline_method(caller->get_code(),
-        //                        callee->get_code(),
-        //                        false_block_it);      
+        inliner::inline_method(caller->get_code(),
+                               callee->get_code(),
+                               false_block_it);      
       }
 
-      // caller_code->erase(it);
+      caller_code->erase(it);
       caller_mc->create();   
     
     }
@@ -171,6 +166,8 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
       inliner::inline_method(caller->get_code(), callee->get_code(), it);
       
     }
+    caller_code->build_cfg();
+    std::cout << SHOW(caller_code->cfg()) << std::endl;
   }           
   std::cout << SHOW(caller->get_code()) << std::endl;
   std::cout << "Explicit inline pass done." << std::endl;
