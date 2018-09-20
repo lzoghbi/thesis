@@ -15,7 +15,7 @@ bool compare_class_types(const DexMethod* meth1, const DexMethod* meth2){
   auto cls2 = cls_type2->get_type();
   auto obj_type = get_object_type();
   
-  while(cls1 != obj_type){
+  while(cls1 != obj_type && cls1 != nullptr){
     if(cls1->c_str() == cls2->c_str()){
       return true;
     }
@@ -81,7 +81,6 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
   MethodsToInline imethods;
   DexMethod *caller, *callee;
   parse_file("imethods.txt", imethods);
-  std::cout << "file parsing ended" << std::endl;
 
   for(auto map_entry : imethods){
     std::string caller_str = get_caller_str(map_entry.first);
@@ -126,8 +125,7 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
         if_insn->set_src(0, dst_location);
         auto if_entry  = new MethodItemEntry(if_insn);
         false_block_it = caller_code->insert_after(instanceof_it, *if_entry);
-        
-        //else goto
+
         auto goto_insn  = new IRInstruction(OPCODE_GOTO);
         auto goto_entry = new MethodItemEntry(goto_insn);
         auto goto_it = caller_code->insert_after(false_block_it /*std::prev(caller_code->end())*/,
@@ -166,10 +164,9 @@ void ExplicitInlinePass::run_pass(DexStoresVector& stores,
       inliner::inline_method(caller->get_code(), callee->get_code(), it);
       
     }
-    caller_code->build_cfg();
-    std::cout << SHOW(caller_code->cfg()) << std::endl;
+    
   }           
-  std::cout << SHOW(caller->get_code()) << std::endl;
+  // std::cout << SHOW(caller->get_code()) << std::endl;
   std::cout << "Explicit inline pass done." << std::endl;
 }
 
